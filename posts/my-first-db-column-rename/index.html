@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Max Helmetag">
+    <meta name="description" content="Max Helmetag&#39;s personal website">
+    <meta name="keywords" content="blog,developer,personal">
+
+    <base href="https://mhelmetag.github.io">
+    <title>
+  My First Database Column Rename (aka Renaming Database Columns Safely) · 
+</title>
+
+    <link rel="canonical" href="https://mhelmetag.github.io/posts/my-first-db-column-rename/">
+
+    <link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700">
+    <link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+    <link rel="stylesheet" href="https://mhelmetag.github.io/css/style.min.css">
+
+    <link rel="icon" type="image/png" href="https://mhelmetag.github.io/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://mhelmetag.github.io/images/favicon-16x16.png" sizes="16x16">
+
+    
+
+    <meta name="generator" content="Hugo 0.40.2" />
+  </head>
+
+  <body>
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://mhelmetag.github.io/">
+      
+    </a>
+    
+    <ul class="navigation-list float-right">
+      
+      <li class="navigation-item">
+        <a class="navigation-link" href="https://mhelmetag.github.io/posts/">Blog</a>
+      </li>
+      
+    </ul>
+    
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+  <article>
+    <header>
+      <h1 class="title">My First Database Column Rename (aka Renaming Database Columns Safely)</h1>
+      <h2 class="date">March 8, 2016</h2>
+
+      
+    </header>
+
+    
+
+<h2 id="my-big-break">My Big Break</h2>
+
+<p>I had always wanted to break into contributing code and I finally found some low hanging fruit on <a href="https://github.com/exercism/exercism.io">Exercism</a>. I made a small change, got some feedback and &ldquo;squashed&rdquo; my commits. Soon after, I wanted a bit larger of a project to work on so I found <a href="https://github.com/exercism/exercism.io/issues/2501">this issue</a>.</p>
+
+<p>The task seemed fairly straightforward:</p>
+
+<ul>
+<li>Rename a database column called <code>mastery</code> to <code>track_mentor</code>. A</li>
+<li>Add a route (kind of like a controller and a route in Rails but&hellip; Sinatra).</li>
+<li>Build some frontend interface for users to invite each other to this track mentor thing.</li>
+</ul>
+
+<p>So I thought, &ldquo;Let&rsquo;s make a lot of these changes all at once!&rdquo; Rename the column, change all the references of <code>mastery</code> to <code>track_mentor</code> and go from there!</p>
+
+<h2 id="uptime">Uptime</h2>
+
+<p>Max (me):</p>
+
+<blockquote>
+<p>I changed the column mastery to track mentor, updated some tests and created a migration. All tests passed locally after db:migrate. I think this is a good jump off point. Let me know what you think :)</p>
+</blockquote>
+
+<p>Katrina (Exercism creator):</p>
+
+<blockquote>
+<p>At the moment, if we deploy this change, then there is a bit of time between when the site is deployed and the migration finishes running where queries and methods are referencing a field that doesn&rsquo;t exist. I&rsquo;d rather not have to take the site down for maintenance if we can avoid it.</p>
+</blockquote>
+
+<p><strong>Note: If there&rsquo;s one reason to contribute to projects on GitHub, it&rsquo;s the code review.</strong></p>
+
+<p>Oh, okay&hellip; so in other words&hellip; let&rsquo;s not do that&hellip;</p>
+
+<h2 id="production">Production</h2>
+
+<p>I never really thought of the word &ldquo;migration&rdquo; until I worked on Exercism. I always just thought of it as &ldquo;change&rdquo;. While that&rsquo;s not wrong, it&rsquo;s also not entirely right (at least not in a production environment).</p>
+
+<p>On my own projects, whenever I make changes I usually nuke my database, run my migrations and reseed. I don&rsquo;t ever think twice about preserving data&hellip; see why that won&rsquo;t work in production?</p>
+
+<p>So what&rsquo;s the solution?</p>
+
+<p>At first I was thinking of a simple migration:</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#fff;font-weight:bold">def</span> change
+  rename_column <span style="color:#0ff;font-weight:bold">:users</span>, <span style="color:#0ff;font-weight:bold">:mastery</span>, <span style="color:#0ff;font-weight:bold">:track_mentor</span>
+<span style="color:#fff;font-weight:bold">end</span></code></pre></div>
+<p>So if that won&rsquo;t work&hellip; then what?
+Create a new <code>track_mentor</code> column and copy all of the <code>mastery</code> data with a rake task:</p>
+<div class="highlight"><pre style="color:#e5e5e5;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#007f7f"># migration</span>
+<span style="color:#fff;font-weight:bold">def</span> change
+  add_column <span style="color:#0ff;font-weight:bold">:users</span>, <span style="color:#0ff;font-weight:bold">:track_mentor</span>, <span style="color:#0ff;font-weight:bold">:text</span>
+<span style="color:#fff;font-weight:bold">end</span>
+
+<span style="color:#007f7f"># user</span>
+serialize <span style="color:#0ff;font-weight:bold">:mastery</span>, <span style="color:#fff;font-weight:bold">Array</span>
+serialize <span style="color:#0ff;font-weight:bold">:track_mentor</span>, <span style="color:#fff;font-weight:bold">Array</span>
+
+<span style="color:#007f7f"># rake</span>
+desc <span style="color:#0ff;font-weight:bold">&#34;migrate info from mastery to track mentor&#34;</span>
+task <span style="color:#0ff;font-weight:bold">:track_mentor</span> <span style="color:#fff;font-weight:bold">do</span>
+  <span style="color:#fff;font-weight:bold">require</span> <span style="color:#0ff;font-weight:bold">&#39;bundler&#39;</span>
+  Bundler.require
+  require_relative <span style="color:#0ff;font-weight:bold">&#39;../exercism&#39;</span>
+
+  User.update_all(<span style="color:#0ff;font-weight:bold">&#34;track_mentor=mastery&#34;</span>)
+<span style="color:#fff;font-weight:bold">end</span></code></pre></div>
+<p>After running that migration and copying the data from one column to the other, I was finally able to make the code changes to reference my newly minted <code>track_mentor</code> column!</p>
+
+<h1 id="so">So?</h1>
+
+<p>Well&hellip; so nothing. I&rsquo;m just saying that even the simplest things are usually more complex. After further reading about migrations and hearing about <a href="http://martinfowler.com/bliki/FeatureToggle.html">feature flags</a>, I started thinking about incremental changes in other places throughout the codebase.</p>
+
+<p>It seems like with all the focus on agile and continuous integration, web development is moving in the direction of merging small experiments into production. It definitely makes testing easier by seeing how new changes work in the wild incrementally versus all in one heap (so there&rsquo;s less code to sift through when things break) and real users are some of the best test cases around (no mocking required!).</p>
+
+  </article>
+
+  <br/>
+
+  
+  
+</section>
+
+      </div>
+
+      <footer class="footer">
+  <section class="container">
+    © 2016 · Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+  </section>
+</footer>
+
+    </main>
+
+    
+
+  </body>
+
+</html>
