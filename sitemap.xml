@@ -3,13 +3,18 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://mhelmetag.github.io/posts/css-tricks-and-element-tab-ninjas/</loc>
+    <lastmod>2018-09-10T20:00:00-07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://mhelmetag.github.io/posts/my-first-db-column-rename/</loc>
-    <lastmod>2016-03-08T22:55:41-07:00</lastmod>
+    <lastmod>2016-03-08T20:00:00-07:00</lastmod>
   </url>
   
   <url>
     <loc>https://mhelmetag.github.io/</loc>
-    <lastmod>2016-03-08T22:55:41-07:00</lastmod>
+    <lastmod>2018-09-10T20:00:00-07:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -20,7 +25,7 @@
   
   <url>
     <loc>https://mhelmetag.github.io/posts/</loc>
-    <lastmod>2016-03-08T22:55:41-07:00</lastmod>
+    <lastmod>2018-09-10T20:00:00-07:00</lastmod>
     <priority>0</priority>
   </url>
   

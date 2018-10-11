@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="author" content="Max Helmetag">
+    <meta name="description" content="Max Helmetag&#39;s personal website">
+    <meta name="keywords" content="blog,developer,personal">
+
+    <base href="https://mhelmetag.github.io">
+    <title>
+  CSS Trickery and Element Tab Ninjas · 
+</title>
+
+    <link rel="canonical" href="https://mhelmetag.github.io/posts/css-tricks-and-element-tab-ninjas/">
+
+    <link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700">
+    <link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+    <link rel="stylesheet" href="https://mhelmetag.github.io/css/style.min.css">
+
+    <link rel="icon" type="image/png" href="https://mhelmetag.github.io/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://mhelmetag.github.io/images/favicon-16x16.png" sizes="16x16">
+
+    
+
+    <meta name="generator" content="Hugo 0.49" />
+  </head>
+
+  <body>
+    <main class="wrapper">
+      <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://mhelmetag.github.io/">
+      
+    </a>
+    
+    <ul class="navigation-list float-right">
+      
+      <li class="navigation-item">
+        <a class="navigation-link" href="https://mhelmetag.github.io/posts/">Blog</a>
+      </li>
+      
+    </ul>
+    
+  </section>
+</nav>
+
+
+      <div class="content">
+        
+  <section class="container post">
+  <article>
+    <header>
+      <h1 class="title">CSS Trickery and Element Tab Ninjas</h1>
+      <h2 class="date">September 10, 2018</h2>
+
+      
+    </header>
+
+    
+
+<h2 id="surf-forecasts-and-a-history-of-hacking">Surf Forecasts and a History of Hacking</h2>
+
+<p>I&rsquo;ve been fiddling around with a prominent surf forecast website for awhile now (especially around their API). I mostly try circumnavigating blockers that prevent user without premium (a subscription service) from seeing things like extended forecasts or HD surfcams.</p>
+
+<p>Just to note, I do pay for premium and would recommend it to any surfers out there (not that this is an ad for the site or anything).</p>
+
+<h2 id="security-through-obscurity">Security Through Obscurity</h2>
+
+<p>Normally, a surf forecast for a specific region looks like this:</p>
+
+<p><img src="https://mhelmetag.github.io/normal-ventura-forecast.png" alt="normal ventura forecast" /></p>
+
+<p>Basically this page is saying you <em>could</em> see the next 17 days of forecast. But, without premium, you can only see the first two.</p>
+
+<p>So&hellip; notice how there are green and blue rectangles (denoting the overall surf conditions for the AM and PM of the day) underneath this ad mask?</p>
+
+<p><img src="https://mhelmetag.github.io/ventura-forecast-mask-focus.png" alt="ventura forecast mask focus" /></p>
+
+<p>A little weird, huh? But it can&rsquo;t be using actual data, right? That&rsquo;d be dumb. This <em>must</em> be boilerplate/filler data that&rsquo;s used to pad the forecast table.</p>
+
+<p>Maybe if we just hide that ad mask, we can see the underlying data (I just use the Chrome &ldquo;Hide element&rdquo; option n the Elements inspector)?</p>
+
+<p><img src="https://mhelmetag.github.io/hide-ad-mask.png" alt="hide ad mask" /></p>
+
+<p>Better&hellip; but the data still looks blurred&hellip; there&rsquo;s definitely real data under there but how do we get it?</p>
+
+<p><img src="https://mhelmetag.github.io/blur-css-class.png" alt="blur css class" /></p>
+
+<p>And luckily, looking at one of the forecast columns, we can see the some classes on one of the <code>div</code>s: <code>sl-condition-day-summary__body--blurred</code>. Seems like something we should update to be <code>sl-condition-day-summary__body</code>. That would probably remove the blur.</p>
+
+<p><img src="https://mhelmetag.github.io/blur-css-class-removed.png" alt="blur css class removed" /></p>
+
+<p>Aha! This trick allows us to see data for up to six days!</p>
+
+<h2 id="chrome-extensions-for-automated-css-trickery">Chrome Extensions for Automated CSS Trickery</h2>
+
+<p>So we&rsquo;ve found that a few simple CSS classes and an ad mask are all that&rsquo;s between us and three times the surf data. How do we automate this hack though? I sure don&rsquo;t want to update these classes and hide the ad mask every time I want to see a surf forecast.</p>
+
+<p>For this, I created a Chrome extension called <a href="https://github.com/mhelmetag/forecastgenie">ForecastGenie</a>.</p>
+
+<p>It&rsquo;s fairly simple&hellip; the timing is actually the hardest/hacky-ist part. Basically, we have to only hide the ad mask and switch some CSS classes once the forecast is loaded. To solve that, I just used a simple <code>setTimeout</code> but&hellip; there&rsquo;s probably a better, more surefire way to accomplish this.</p>
+
+<p>I found that there are five CSS classes that blur each section of a forecast (condition, swell, wind, tide and weather). The extension loops through each CSS class, adding the unblurred version of the CSS class and removing the blurred version.</p>
+
+<p>The end result looks like this&hellip;</p>
+
+<p><img src="https://mhelmetag.github.io/forecastgenie.gif" alt="forecastgenie" /></p>
+
+<p>Just a cautionary tale that masks don&rsquo;t actually block information or keep a user from doing or seeing what they shouldn&rsquo;t.</p>
+
+<p>Also a testament of how awesome Chrome extensions are!</p>
+
+  </article>
+
+  <br/>
+
+  
+  
+</section>
+
+      </div>
+
+      <footer class="footer">
+  <section class="container">
+    © 2018 · Powered by <a href="https://gohugo.io/">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/">Coder</a>.
+  </section>
+</footer>
+
+    </main>
+
+    
+
+  </body>
+
+</html>
