@@ -71,27 +71,27 @@
 
 <p>Normally, a surf forecast for a specific region looks like this:</p>
 
-<p><img src="https://mhelmetag.github.io/normal-ventura-forecast.png" alt="normal ventura forecast" /></p>
+<p><img src="https://s3-us-west-2.amazonaws.com/maxworld-images/normal-ventura-forecast.png" alt="normal ventura forecast" /></p>
 
 <p>Basically this page is saying you <em>could</em> see the next 17 days of forecast. But, without premium, you can only see the first two.</p>
 
 <p>So&hellip; notice how there are green and blue rectangles (denoting the overall surf conditions for the AM and PM of the day) underneath this ad mask?</p>
 
-<p><img src="https://mhelmetag.github.io/ventura-forecast-mask-focus.png" alt="ventura forecast mask focus" /></p>
+<p><img src="https://s3-us-west-2.amazonaws.com/maxworld-images/ventura-forecast-mask-focus.png" alt="ventura forecast mask focus" /></p>
 
 <p>A little weird, huh? But it can&rsquo;t be using actual data, right? That&rsquo;d be dumb. This <em>must</em> be boilerplate/filler data that&rsquo;s used to pad the forecast table.</p>
 
 <p>Maybe if we just hide that ad mask, we can see the underlying data (I just use the Chrome &ldquo;Hide element&rdquo; option n the Elements inspector)?</p>
 
-<p><img src="https://mhelmetag.github.io/hide-ad-mask.png" alt="hide ad mask" /></p>
+<p><img src="https://s3-us-west-2.amazonaws.com/maxworld-images/hide-ad-mask.png" alt="hide ad mask" /></p>
 
 <p>Better&hellip; but the data still looks blurred&hellip; there&rsquo;s definitely real data under there but how do we get it?</p>
 
-<p><img src="https://mhelmetag.github.io/blur-css-class.png" alt="blur css class" /></p>
+<p><img src="https://s3-us-west-2.amazonaws.com/maxworld-images/blur-css-class.png" alt="blur css class" /></p>
 
 <p>And luckily, looking at one of the forecast columns, we can see the some classes on one of the <code>div</code>s: <code>sl-condition-day-summary__body--blurred</code>. Seems like something we should update to be <code>sl-condition-day-summary__body</code>. That would probably remove the blur.</p>
 
-<p><img src="https://mhelmetag.github.io/blur-css-class-removed.png" alt="blur css class removed" /></p>
+<p><img src="https://s3-us-west-2.amazonaws.com/maxworld-images/blur-css-class-removed.png" alt="blur css class removed" /></p>
 
 <p>Aha! This trick allows us to see data for up to six days!</p>
 
@@ -107,7 +107,7 @@
 
 <p>The end result looks like this&hellip;</p>
 
-<p><img src="https://mhelmetag.github.io/forecastgenie.gif" alt="forecastgenie" /></p>
+<p><img src="https://s3-us-west-2.amazonaws.com/maxworld-images/forecastgenie.gif" alt="forecastgenie" /></p>
 
 <p>Just a cautionary tale that masks don&rsquo;t actually block information or keep a user from doing or seeing what they shouldn&rsquo;t.</p>
 
